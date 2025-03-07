@@ -1,0 +1,9 @@
+LDWA 0xFC16, i     ; Load 0xFFFF in the A reg.
+STWA 0x7000, d
+LDWA 0x0041, i
+ASLA
+ASRA
+STBA 0xFC16, d
+STOP
+
+.END
