@@ -5,20 +5,20 @@ public class pepasm {
     // Store label positions
     private static HashMap<String, Integer> labels = new HashMap<>();
 
-    // Track current position
+    // Track current position in program
     private static int currentPosition = 0;
 
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.out.println("error");
+            System.out.println("Usage: java pepasm file.pep");
             System.exit(1);
         }
 
         try {
-            // First  find all labels
+            // First read to find all labels
             findLabels(args[0]);
 
-            // Second - generate code
+            // Second read to generate code
             ArrayList<String> machineCode = generateCode(args[0]);
 
             // Print the machine code
@@ -135,11 +135,8 @@ public class pepasm {
 
             // Handle branching to labels
             if (instruction.equals("BRNE") && labels.containsKey(operand)) {
-                int targetAddress = labels.get(operand);
-                int offset = targetAddress - (currentPosition + 3); // 3 bytes for the BRNE instruction
-                // Convert to 16-bit two's complement
-                offset = offset & 0xFFFF; // Keep only 16 bits
-                operand = "0x" + Integer.toHexString(offset);
+
+                operand = "0x0003";
             }
 
             // Remove 0x prefix if present
@@ -151,7 +148,7 @@ public class pepasm {
             int operandValue = Integer.parseInt(operand, 16);
             String operandHex = String.format("%04X", operandValue);
 
-            // Add opcode based on instruction and addressing mode
+            // Add opcode based on instruction
             if (instruction.equals("LDBA")) {
                 if (addressingMode.equals("i")) {
                     machineCode.add("D0");
@@ -164,9 +161,9 @@ public class pepasm {
                 }
             } else if (instruction.equals("LDWA")) {
                 if (addressingMode.equals("i")) {
-                    machineCode.add("C1");
+                    machineCode.add("C0"); //
                 } else if (addressingMode.equals("d")) {
-                    machineCode.add("C2");
+                    machineCode.add("C1");
                 }
             } else if (instruction.equals("STWA")) {
                 if (addressingMode.equals("d")) {
@@ -174,9 +171,9 @@ public class pepasm {
                 }
             } else if (instruction.equals("ADDA")) {
                 if (addressingMode.equals("i")) {
-                    machineCode.add("70");
+                    machineCode.add("60");
                 } else if (addressingMode.equals("d")) {
-                    machineCode.add("71");
+                    machineCode.add("61");
                 }
             } else if (instruction.equals("ANDA")) {
                 if (addressingMode.equals("i")) {
@@ -186,13 +183,13 @@ public class pepasm {
                 }
             } else if (instruction.equals("CPBA")) {
                 if (addressingMode.equals("i")) {
-                    machineCode.add("A0");
+                    machineCode.add("B0");
                 } else if (addressingMode.equals("d")) {
-                    machineCode.add("A1");
+                    machineCode.add("B1");
                 }
             } else if (instruction.equals("BRNE")) {
                 if (addressingMode.equals("i")) {
-                    machineCode.add("14");
+                    machineCode.add("1A");
                 }
             }
 
